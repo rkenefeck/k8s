@@ -1,10 +1,7 @@
 # All-In-One Kubernetes tools (kubectl, helm, iam-authenticator, eksctl, kubeseal, etc)
 
-[If enjoy, please consider buying me a coffee.](https://www.buymeacoffee.com/ozbillwang)
-
 kubernetes docker images with necessary tools 
 
-[![DockerHub Badge](http://dockeri.co/image/alpine/k8s)](https://hub.docker.com/r/alpine/k8s/)
 
 ### Notes
 
@@ -17,31 +14,14 @@ kubernetes docker images with necessary tools
 ### Installed tools
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) (latest minor versions: https://kubernetes.io/releases/)
-- [kustomize](https://github.com/kubernetes-sigs/kustomize) (latest release: https://github.com/kubernetes-sigs/kustomize/releases/latest)
-- [helm](https://github.com/helm/helm) (latest release: https://github.com/helm/helm/releases/latest)
-- [helm-diff](https://github.com/databus23/helm-diff) (latest commit)
-- [helm-unittest](https://github.com/helm-unittest/helm-unittest) (latest commit)
-- [helm-push](https://github.com/chartmuseum/helm-push) (latest commit)
-- [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator) (latest version when run the build)
-- [eksctl](https://github.com/weaveworks/eksctl) (latest version when run the build)
-- [awscli v1](https://github.com/aws/aws-cli) (latest version when run the build)
-- [kubeseal](https://github.com/bitnami-labs/sealed-secrets) (latest version when run the build)
-- [krew](https://github.com/kubernetes-sigs/krew) (latest version when run the build)
 - [vals](https://github.com/helmfile/vals) (latest version when run the build)
 - [kubeconform](https://github.com/yannh/kubeconform) (latest version when run the build)
 - General tools, such as bash, curl, jq, yq, etc
 
 ### Github Repo
 
-https://github.com/alpine-docker/k8s
+https://github.com/rkenefeck/k8s
 
-### build logs
-
-https://app.circleci.com/pipelines/github/alpine-docker/k8s
-
-### Docker image tags
-
-https://hub.docker.com/r/alpine/k8s/tags/
 
 # Why we need it
 
@@ -63,19 +43,5 @@ bash ./build.sh
 
 Second thinking, if you are adding a new tool, make sure it is supported in both `linux/amd64,linux/arm64` platforms
 
-### Notes for krew usage
 
-You need execute `source ~/.bashrc` before execute krew
-```
-$(DOCKER_CMD) bash -c "source ~/.bashrc" && kubectl krew update
-$(DOCKER_CMD) bash -c "source ~/.bashrc" && kubectl krew install modify-secret ns grep
-```
-
-### Weekly build
-
-Automation build job runs weekly by Circle CI Pipeline.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=alpine-docker/k8s&type=Date)](https://star-history.com/#alpine-docker/k8s&Date)
 

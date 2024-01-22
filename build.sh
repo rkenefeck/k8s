@@ -5,41 +5,20 @@
 # DOCKER_USERNAME
 # DOCKER_PASSWORD
 
-# set -ex
+set -ex
 
-set -e
+#set -e
 
 install_jq() {
   # jq 1.6
   DEBIAN_FRONTEND=noninteractive
   #sudo apt-get update && sudo apt-get -q -y install jq
-  curl -sL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o jq
+  curl -sL https://github.com/stedolan/jq/releases/download/jq-1.7/jq-linux64 -o jq
   sudo mv jq /usr/bin/jq
   sudo chmod +x /usr/bin/jq
 }
 
 build() {
-  # helm latest, hold the release candidates
-  helm=$(curl -s https://api.github.com/repos/helm/helm/releases | jq -r '.[].tag_name | select([startswith("v"), (contains("-rc") | not)] | all)' \
-    | sort -rV | head -n 1 |sed 's/v//')
-  echo "helm version is $helm"
-
-  # kustomize latest
-  kustomize_release=$(curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases | jq -r '.[].tag_name | select(contains("kustomize"))' \
-    | sort -rV | head -n 1)
-  kustomize_version=$(basename ${kustomize_release})
-  echo "kustomize version is $kustomize_version"
-
-  # kubeseal latest
-  kubeseal_version=$(curl -s https://api.github.com/repos/bitnami-labs/sealed-secrets/releases | jq -r '.[].tag_name | select(startswith("v"))' \
-    | sort -rV | head -n 1 |sed 's/v//')
-  echo "kubeseal version is $kubeseal_version"
-
-  # krew latest
-  krew_version=$(curl -s https://api.github.com/repos/kubernetes-sigs/krew/releases | jq -r '.[].tag_name | select(startswith("v"))' \
-    | sort -rV | head -n 1 |sed 's/v//')
-  echo "krew version is $krew_version"
-
   # vals latest
   vals_version=$(curl -s https://api.github.com/repos/helmfile/vals/releases | jq -r '.[].tag_name | select(startswith("v"))' \
     | sort -rV | head -n 1 |sed 's/v//')
@@ -52,44 +31,14 @@ build() {
 
   docker build --no-cache \
     --build-arg KUBECTL_VERSION=${tag} \
-    --build-arg HELM_VERSION=${helm} \
-    --build-arg KUSTOMIZE_VERSION=${kustomize_version} \
-    --build-arg KUBESEAL_VERSION=${kubeseal_version} \
-    --build-arg KREW_VERSION=${krew_version} \
     --build-arg VALS_VERSION=${vals_version} \
     --build-arg KUBECONFORM_VERSION=${kubeconform_version} \
-    -t ${image}:${tag} .
+    -t ttl.sh/${IMAGE_NAME}:1h .
+  docker push ttl.sh/${IMAGE_NAME}:1h
 
-  # run test
-  echo "Detected Helm3+"
-  version=$(docker run --rm ${image}:${tag} helm version)
-  # version.BuildInfo{Version:"v3.6.3", GitCommit:"d506314abfb5d21419df8c7e7e68012379db2354", GitTreeState:"clean", GoVersion:"go1.16.5"}
-
-  version=$(echo ${version}| awk -F \" '{print $2}')
-  if [ "${version}" == "v${helm}" ]; then
-    echo "matched"
-  else
-    echo "unmatched"
-    exit
-  fi
-
-  if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    docker buildx create --use
-    docker buildx build --no-cache --push \
-      --platform=linux/amd64,linux/arm64 \
-      --build-arg KUBECTL_VERSION=${tag} \
-      --build-arg HELM_VERSION=${helm} \
-      --build-arg KUSTOMIZE_VERSION=${kustomize_version} \
-      --build-arg KUBESEAL_VERSION=${kubeseal_version} \
-      --build-arg KREW_VERSION=${krew_version} \
-      --build-arg VALS_VERSION=${vals_version} \
-      --build-arg KUBECONFORM_VERSION=${kubeconform_version} \
-      -t ${image}:${tag} .
-  fi
 }
-
-image="alpine/k8s"
+image="rkenefeck/k8s"
+IMAGE_NAME=$(uuidgen)
 
 install_jq
 
