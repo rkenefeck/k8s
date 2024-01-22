@@ -1,4 +1,4 @@
-# All-In-One Kubernetes tools (kubectl, helm, iam-authenticator, eksctl, kubeseal, etc)
+# All-In-One Kubernetes tools (kubectl, kubeconform)
 
 kubernetes docker images with necessary tools 
 
